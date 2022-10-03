@@ -47,6 +47,9 @@ def hey_view(request):
         s.save()
         return res
 
+    s = State.objects.create(last_update=datetime.now())
+    s.save()
+
     username_main = 'asdfasd79743432'
     user_id_main = get_user_id(username_main)
     url = "https://api.twitter.com/2/users/{}/following".format(user_id_main)

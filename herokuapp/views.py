@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 import requests
+from datetime import  datetime
+from herokuapp.models import *
 
 # Create your views here.
 
@@ -36,6 +38,15 @@ def get_user_id(username):
 
 def hey_view(request):
     username = request.GET.get('user')
+    res = {'res':False}
+
+    if State.objects.count() > 0 and (datetime.now() - State.objects.all()[0].last_update).total_seconds() < 15*60:
+        res['res'] = Suspects.objects.filter(username__exact=username).count() > 0
+        s = Suspects.objects.get(username__exact=username)
+        s.num_ask += 1
+        s.save()
+        return res
+
     username_main = 'asdfasd79743432'
     user_id_main = get_user_id(username_main)
     url = "https://api.twitter.com/2/users/{}/following".format(user_id_main)
@@ -48,9 +59,13 @@ def hey_view(request):
                 response.status_code, response.text
             )
         )
-    res = {'res':False}
+    for user in Suspects.objects.all():
+        user.delete()
     for user in response.json()['data']:
+        s = Suspects.objects.create(username=user, num_ask=0)
         if username == user['username']:
             res['res'] = True
+            s.num_ask = 1
+        s.save()
 
     return JsonResponse(res)

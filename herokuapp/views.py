@@ -40,7 +40,7 @@ def hey_view(request):
     username = request.GET.get('user')
     res = {'res':False}
 
-    if State.objects.count() > 0 and (datetime.now(timezone.utc) - State.objects.all()[0].last_update).total_seconds() < 15*60:
+    if State.objects.count() > 0 and (datetime.now(timezone.utc) - State.objects.all()[0].last_update).total_seconds() < 2*15*60:
         res['res'] = Suspects.objects.filter(username__exact=username).count() > 0
         if res['res']:
             s = Suspects.objects.get(username__exact=username)

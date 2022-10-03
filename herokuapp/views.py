@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 import requests
-from datetime import  datetime
+from datetime import  datetime, timezone
 from herokuapp.models import *
 
 # Create your views here.
@@ -40,14 +40,14 @@ def hey_view(request):
     username = request.GET.get('user')
     res = {'res':False}
 
-    if State.objects.count() > 0 and (datetime.now() - State.objects.all()[0].last_update).total_seconds() < 15*60:
+    if State.objects.count() > 0 and (datetime.now(timezone.utc) - State.objects.all()[0].last_update).total_seconds() < 15*60:
         res['res'] = Suspects.objects.filter(username__exact=username).count() > 0
         s = Suspects.objects.get(username__exact=username)
         s.num_ask += 1
         s.save()
         return res
 
-    s = State.objects.create(last_update=datetime.now())
+    s = State.objects.create(last_update=datetime.now(timezone.utc))
     s.save()
 
     username_main = 'asdfasd79743432'

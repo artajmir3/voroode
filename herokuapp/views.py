@@ -42,12 +42,11 @@ def hey_view(request):
 
     if State.objects.count() > 0 and (datetime.now(timezone.utc) - State.objects.all()[0].last_update).total_seconds() < 15*60:
         res['res'] = Suspects.objects.filter(username__exact=username).count() > 0
-        if not res['res']:
-            return res
-        s = Suspects.objects.get(username__exact=username)
-        s.num_ask += 1
-        s.save()
-        return res
+        if res['res']:
+            s = Suspects.objects.get(username__exact=username)
+            s.num_ask += 1
+            s.save()
+        return JsonResponse(res)
 
     s = State.objects.create(last_update=datetime.now(timezone.utc))
     s.save()

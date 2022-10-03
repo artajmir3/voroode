@@ -66,7 +66,7 @@ def hey_view(request):
     for user in Suspects.objects.all():
         user.delete()
     for user in response.json()['data']:
-        s = Suspects.objects.create(username=user, num_ask=0)
+        s = Suspects.objects.create(username=user['username'], num_ask=0)
         if username == user['username']:
             res['res'] = True
             s.num_ask = 1

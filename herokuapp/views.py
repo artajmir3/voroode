@@ -48,6 +48,8 @@ def hey_view(request):
             s.save()
         return JsonResponse(res)
 
+    for s in State.objects.all():
+        s.delete()
     s = State.objects.create(last_update=datetime.now(timezone.utc))
     s.save()
 
